@@ -52,17 +52,19 @@ const reducer = (state, { type, payload }) => {
   }
 };
 
-const Wrapper = () => {
-  const { appState, setAppState } = useContext(appContext);
+const createWrapper = (Component) => {
+  return (props) => {
+    const { appState, setAppState } = useContext(appContext);
 
-  const dispatch = (action) => {
-    setAppState(reducer(appState, action));
+    const dispatch = (action) => {
+      setAppState(reducer(appState, action));
+    };
+
+    return <Component {...props} dispatch={dispatch} state={appState} />;
   };
-
-  return <UserModifier dispatch={dispatch} state={appState} />;
 };
 
-const UserModifier = ({ state, dispatch }) => {
+const UserModifier = ({ state, dispatch, children }) => {
   const onChange = (e) => {
     dispatch({
       type: "updateUser",
@@ -74,9 +76,12 @@ const UserModifier = ({ state, dispatch }) => {
 
   return (
     <div>
+      {children}
       <input value={state.user.name} onChange={onChange}></input>
     </div>
   );
 };
+
+const Wrapper = createWrapper(UserModifier);
 
 export default App;
