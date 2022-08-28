@@ -24,10 +24,12 @@ export const store = {
   },
 };
 
-export const connect = (Component) => {
+export const connect = (selector) => (Component) => {
   return (props) => {
     const [, update] = useState({});
     const { state, setState } = useContext(appContext);
+
+    const data = selector ? selector(state) : { state };
 
     useEffect(() => {
       store.subscribe(() => {
@@ -36,11 +38,11 @@ export const connect = (Component) => {
     }, []);
 
     const dispatch = (action) => {
-      setState(reducer(state, action));
+      setState(reducer(data, action));
       update({});
     };
 
-    return <Component {...props} dispatch={dispatch} state={state} />;
+    return <Component {...props} dispatch={dispatch} {...data} />;
   };
 };
 

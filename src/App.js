@@ -40,12 +40,17 @@ const 小儿子 = () => {
 };
 
 const User = connect(() => {
-  console.log("User 执行了", Math.random());
   const { state } = useContext(appContext);
-  return <div>User: {state.user.name}</div>;
+  return {
+    user: state.user,
+  };
+})(({ user }) => {
+  console.log("User 执行了", Math.random());
+
+  return <div>User: {user.name}</div>;
 });
 
-const UserModifier = connect(({ state, dispatch, children }) => {
+const UserModifier = connect()(({ state, dispatch, children }) => {
   console.log("UserModifier 执行了", Math.random());
   const onChange = (e) => {
     dispatch({
