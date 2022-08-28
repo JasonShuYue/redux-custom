@@ -2,27 +2,56 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 
 const appContext = React.createContext(null);
 
-const App = () => {
-  console.log("App 执行了", Math.random());
-
-  const [appState, setAppState] = useState({
+const store = {
+  state: {
     user: {
       name: "Jason",
       age: 27,
     },
-  });
+  },
+  setState(newState) {
+    store.state = newState;
 
-  const contextValue = { appState, setAppState };
+    store.listeners.forEach((fn) => fn(store.state));
+  },
+  listeners: [],
+  subscribe(fn) {
+    store.listeners.push(fn);
+    return () => {
+      const index = store.listeners.indexOf(fn);
+      store.listeners.splice(index, 1);
+    };
+  },
+};
 
-  const x = useMemo(() => {
-    return <小儿子 />;
-  }, []);
+const connect = (Component) => {
+  return (props) => {
+    const [, update] = useState({});
+    const { state, setState } = useContext(appContext);
+
+    useEffect(() => {
+      store.subscribe(() => {
+        update({});
+      });
+    }, []);
+
+    const dispatch = (action) => {
+      setState(reducer(state, action));
+      update({});
+    };
+
+    return <Component {...props} dispatch={dispatch} state={state} />;
+  };
+};
+
+const App = () => {
+  console.log("App 执行了", Math.random());
 
   return (
-    <appContext.Provider value={contextValue}>
+    <appContext.Provider value={store}>
       <大儿子 />
       <二儿子 />
-      {x}
+      <小儿子 />
     </appContext.Provider>
   );
 };
@@ -53,11 +82,11 @@ const 小儿子 = () => {
   return <section>小儿子</section>;
 };
 
-const User = () => {
+const User = connect(() => {
   console.log("User 执行了", Math.random());
-  const { appState } = useContext(appContext);
-  return <div>User: {appState.user.name}</div>;
-};
+  const { state } = useContext(appContext);
+  return <div>User: {state.user.name}</div>;
+});
 
 const reducer = (state, { type, payload }) => {
   if (type === "updateUser") {
@@ -71,18 +100,6 @@ const reducer = (state, { type, payload }) => {
   } else {
     return state;
   }
-};
-
-const connect = (Component) => {
-  return (props) => {
-    const { appState, setAppState } = useContext(appContext);
-
-    const dispatch = (action) => {
-      setAppState(reducer(appState, action));
-    };
-
-    return <Component {...props} dispatch={dispatch} state={appState} />;
-  };
 };
 
 const UserModifier = connect(({ state, dispatch, children }) => {
