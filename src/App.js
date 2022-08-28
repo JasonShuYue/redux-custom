@@ -1,48 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-
-const appContext = React.createContext(null);
-
-const store = {
-  state: {
-    user: {
-      name: "Jason",
-      age: 27,
-    },
-  },
-  setState(newState) {
-    store.state = newState;
-
-    store.listeners.forEach((fn) => fn(store.state));
-  },
-  listeners: [],
-  subscribe(fn) {
-    store.listeners.push(fn);
-    return () => {
-      const index = store.listeners.indexOf(fn);
-      store.listeners.splice(index, 1);
-    };
-  },
-};
-
-const connect = (Component) => {
-  return (props) => {
-    const [, update] = useState({});
-    const { state, setState } = useContext(appContext);
-
-    useEffect(() => {
-      store.subscribe(() => {
-        update({});
-      });
-    }, []);
-
-    const dispatch = (action) => {
-      setState(reducer(state, action));
-      update({});
-    };
-
-    return <Component {...props} dispatch={dispatch} state={state} />;
-  };
-};
+import { store, connect, appContext } from "./redux";
 
 const App = () => {
   console.log("App 执行了", Math.random());
@@ -87,20 +44,6 @@ const User = connect(() => {
   const { state } = useContext(appContext);
   return <div>User: {state.user.name}</div>;
 });
-
-const reducer = (state, { type, payload }) => {
-  if (type === "updateUser") {
-    return {
-      ...state,
-      user: {
-        ...state.user,
-        ...payload,
-      },
-    };
-  } else {
-    return state;
-  }
-};
 
 const UserModifier = connect(({ state, dispatch, children }) => {
   console.log("UserModifier 执行了", Math.random());
