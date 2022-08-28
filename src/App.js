@@ -38,11 +38,29 @@ const User = () => {
   return <div>User: {appState.user.name}</div>;
 };
 
+const reducer = (state, { type, payload }) => {
+  if (type === "updateUser") {
+    return {
+      ...state,
+      user: {
+        ...state.user,
+        ...payload,
+      },
+    };
+  } else {
+    return state;
+  }
+};
+
 const UserModifier = () => {
   const { appState, setAppState } = useContext(appContext);
   const onChange = (e) => {
-    const newState = Object.assign({}, appState);
-    newState.user.name = e.target.value;
+    const newState = reducer(appState, {
+      type: "updateUser",
+      payload: {
+        name: e.target.value,
+      },
+    });
     setAppState(newState);
   };
 
