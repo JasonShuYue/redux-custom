@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext, useEffect, useState } from "react";
 
-function App() {
+const appContext = React.createContext(null);
+
+const App = () => {
+  const [appState, setAppState] = useState({
+    user: {
+      name: "Jason",
+      age: 27,
+    },
+  });
+
+  const contextValue = { appState, setAppState };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <appContext.Provider value={contextValue}>
+      <大儿子 />
+      <二儿子 />
+      <小儿子 />
+    </appContext.Provider>
+  );
+};
+
+const 大儿子 = () => (
+  <section>
+    大儿子<User></User>
+  </section>
+);
+const 二儿子 = () => (
+  <section>
+    二儿子<UserModifier></UserModifier>
+  </section>
+);
+const 小儿子 = () => <section>小儿子</section>;
+
+const User = () => {
+  const { appState } = useContext(appContext);
+  return <div>User: {appState.user.name}</div>;
+};
+
+const UserModifier = () => {
+  const { appState, setAppState } = useContext(appContext);
+  const onChange = (e) => {
+    const newState = Object.assign({}, appState);
+    newState.user.name = e.target.value;
+    setAppState(newState);
+  };
+
+  return (
+    <div>
+      <input value={appState.user.name} onChange={onChange}></input>
     </div>
   );
-}
+};
 
 export default App;
