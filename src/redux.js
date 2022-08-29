@@ -8,6 +8,9 @@ export const store = {
       name: "Jason",
       age: 27,
     },
+    group: {
+      name: "前端组",
+    },
   },
   setState(newState) {
     store.state = newState;

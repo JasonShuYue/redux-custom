@@ -33,14 +33,21 @@ const 二儿子 = () => {
   );
 };
 
-const 小儿子 = () => {
+const 小儿子 = connect((state) => {
+  return {
+    group: state.group || {},
+  };
+})(({ group }) => {
   console.log("小儿子 执行了", Math.random());
 
-  return <section>小儿子</section>;
-};
+  return (
+    <section>
+      小儿子<div>Group: {group.name}</div>
+    </section>
+  );
+});
 
-const User = connect(() => {
-  const { state } = useContext(appContext);
+const User = connect((state) => {
   return {
     user: state.user,
   };
