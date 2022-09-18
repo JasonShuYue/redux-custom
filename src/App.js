@@ -1,79 +1,60 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { store, connect, appContext } from "./redux";
+import React, { useState, useContext } from "react";
+
+const AppContext = React.createContext(null);
 
 const App = () => {
-  console.log("App 执行了", Math.random());
+  const [appState, setAppState] = useState({
+    user: {
+      name: "Jason",
+      age: 18,
+    },
+  });
+
+  const contextValue = { appState, setAppState };
 
   return (
-    <appContext.Provider value={store}>
+    <AppContext.Provider value={contextValue}>
       <大儿子 />
       <二儿子 />
       <小儿子 />
-    </appContext.Provider>
+    </AppContext.Provider>
   );
 };
 
-const 大儿子 = () => {
-  console.log("大儿子 执行了", Math.random());
+const 大儿子 = () => (
+  <section>
+    大儿子
+    <User />
+  </section>
+);
 
-  return (
-    <section>
-      大儿子<User></User>
-    </section>
-  );
+const 二儿子 = () => (
+  <section>
+    二儿子
+    <UserModifier />
+  </section>
+);
+
+const 小儿子 = () => <section>小儿子</section>;
+
+const User = () => {
+  const contextValue = useContext(AppContext);
+  return <div>User: {contextValue.appState.user.name}</div>;
 };
 
-const 二儿子 = () => {
-  console.log("二儿子 执行了", Math.random());
+const UserModifier = () => {
+  const contextValue = useContext(AppContext);
 
-  return (
-    <section>
-      二儿子<UserModifier></UserModifier>
-    </section>
-  );
-};
-
-const 小儿子 = connect((state) => {
-  return {
-    group: state.group || {},
-  };
-})(({ group }) => {
-  console.log("小儿子 执行了", Math.random());
-
-  return (
-    <section>
-      小儿子<div>Group: {group.name}</div>
-    </section>
-  );
-});
-
-const User = connect((state) => {
-  return {
-    user: state.user,
-  };
-})(({ user }) => {
-  console.log("User 执行了", Math.random());
-
-  return <div>User: {user.name}</div>;
-});
-
-const UserModifier = connect()(({ state, dispatch, children }) => {
-  console.log("UserModifier 执行了", Math.random());
   const onChange = (e) => {
-    dispatch({
-      type: "updateUser",
-      payload: {
-        name: e.target.value,
-      },
-    });
+    contextValue.appState.user.name = e.target.value;
+    contextValue.setAppState({ ...contextValue.appState });
   };
 
   return (
     <div>
-      {children}
-      <input value={state.user.name} onChange={onChange}></input>
+      <input value={contextValue.appState.user.name} onChange={onChange} />
     </div>
   );
-});
+};
 
 export default App;
