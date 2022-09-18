@@ -1,28 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
+import React from "react";
 
-const AppContext = React.createContext(null);
-
-const store = {
-  state: {
-    user: {
-      name: "Jason",
-      age: 18,
-    },
-  },
-  listeners: [],
-  subscribe: (fn) => {
-    store.listeners.push(fn);
-    return () => {
-      const index = store.listeners.indexOf(fn);
-      store.listeners.splice(index, 1);
-    };
-  },
-  setState: (newState) => {
-    store.state = newState;
-
-    store.listeners.forEach((fn) => fn(store.state));
-  },
-};
+import { connect, AppContext } from "./redux";
 
 const App = () => {
   return (
@@ -57,37 +35,6 @@ const 二儿子 = () => {
 const 小儿子 = () => {
   console.log("小儿子执行了!!!", Math.random());
   return <section>小儿子</section>;
-};
-
-const reducer = (state, { type, payload }) => {
-  if (type === "updateUser") {
-    return {
-      ...state,
-      user: {
-        ...state.user,
-        ...payload,
-      },
-    };
-  } else {
-    return state;
-  }
-};
-
-const connect = (Component) => {
-  return (props) => {
-    const { state, setState, listeners } = useContext(AppContext);
-    const [, update] = useState({});
-
-    useEffect(() => {
-      listeners.push(() => update({}));
-    }, []);
-
-    const dispatch = (action) => {
-      setState(reducer(state, action));
-    };
-
-    return <Component {...props} state={state} dispatch={dispatch} />;
-  };
 };
 
 const User = connect(({ state }) => {
