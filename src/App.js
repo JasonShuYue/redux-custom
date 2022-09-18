@@ -31,7 +31,7 @@ const 大儿子 = () => (
 const 二儿子 = () => (
   <section>
     二儿子
-    <Wrapper />
+    <UserModifier />
   </section>
 );
 
@@ -56,17 +56,19 @@ const reducer = (state, { type, payload }) => {
   }
 };
 
-const Wrapper = () => {
-  const { appState, setAppState } = useContext(AppContext);
+const connect = (Component) => {
+  return (props) => {
+    const { appState, setAppState } = useContext(AppContext);
 
-  const dispatch = (action) => {
-    setAppState(reducer(appState, action));
+    const dispatch = (action) => {
+      setAppState(reducer(appState, action));
+    };
+
+    return <Component {...props} state={appState} dispatch={dispatch} />;
   };
-
-  return <UserModifier state={appState} dispatch={dispatch} />;
 };
 
-const UserModifier = ({ state, dispatch }) => {
+const UserModifier = connect(({ state, dispatch }) => {
   const onChange = (e) => {
     dispatch({
       type: "updateUser",
@@ -81,6 +83,6 @@ const UserModifier = ({ state, dispatch }) => {
       <input value={state.user.name} onChange={onChange} />
     </div>
   );
-};
+});
 
 export default App;
