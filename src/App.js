@@ -2,18 +2,23 @@ import React, { useState, useContext } from "react";
 
 const AppContext = React.createContext(null);
 
-const App = () => {
-  const [appState, setAppState] = useState({
+const store = {
+  state: {
     user: {
       name: "Jason",
       age: 18,
     },
-  });
+  },
 
-  const contextValue = { appState, setAppState };
+  setState: (newState) => {
+    console.log(newState);
+    store.state = newState;
+  },
+};
 
+const App = () => {
   return (
-    <AppContext.Provider value={contextValue}>
+    <AppContext.Provider value={store}>
       <大儿子 />
       <二儿子 />
       <小儿子 />
@@ -21,25 +26,35 @@ const App = () => {
   );
 };
 
-const 大儿子 = () => (
-  <section>
-    大儿子
-    <User />
-  </section>
-);
+const 大儿子 = () => {
+  console.log("大儿子执行了!!!", Math.random());
+  return (
+    <section>
+      大儿子
+      <User />
+    </section>
+  );
+};
 
-const 二儿子 = () => (
-  <section>
-    二儿子
-    <UserModifier />
-  </section>
-);
+const 二儿子 = () => {
+  console.log("二儿子执行了!!!", Math.random());
+  return (
+    <section>
+      二儿子
+      <UserModifier />
+    </section>
+  );
+};
 
-const 小儿子 = () => <section>小儿子</section>;
+const 小儿子 = () => {
+  console.log("小儿子执行了!!!", Math.random());
+  return <section>小儿子</section>;
+};
 
 const User = () => {
-  const contextValue = useContext(AppContext);
-  return <div>User: {contextValue.appState.user.name}</div>;
+  console.log("User 执行了", Math.random());
+  const { state } = useContext(AppContext);
+  return <div>User: {state.user.name}</div>;
 };
 
 const reducer = (state, { type, payload }) => {
@@ -58,17 +73,20 @@ const reducer = (state, { type, payload }) => {
 
 const connect = (Component) => {
   return (props) => {
-    const { appState, setAppState } = useContext(AppContext);
+    const { state, setState } = useContext(AppContext);
+    const [, update] = useState({});
 
     const dispatch = (action) => {
-      setAppState(reducer(appState, action));
+      setState(reducer(state, action));
+      update({});
     };
 
-    return <Component {...props} state={appState} dispatch={dispatch} />;
+    return <Component {...props} state={state} dispatch={dispatch} />;
   };
 };
 
 const UserModifier = connect(({ state, dispatch }) => {
+  console.log("UserModifier 执行了", Math.random());
   const onChange = (e) => {
     dispatch({
       type: "updateUser",
