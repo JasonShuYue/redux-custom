@@ -38,10 +38,12 @@ export const store = {
   },
 };
 
-export const connect = (Component) => {
+export const connect = (selector) => (Component) => {
   return (props) => {
     const { state, setState, listeners } = useContext(AppContext);
     const [, update] = useState({});
+
+    const data = selector ? selector(state) : { state };
 
     useEffect(() => {
       listeners.push(() => update({}));
@@ -51,6 +53,6 @@ export const connect = (Component) => {
       setState(reducer(state, action));
     };
 
-    return <Component {...props} state={state} dispatch={dispatch} />;
+    return <Component {...props} {...data} dispatch={dispatch} />;
   };
 };

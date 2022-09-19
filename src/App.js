@@ -1,6 +1,6 @@
 import React from "react";
 
-import { connect, AppContext } from "./redux";
+import { connect, AppContext, store } from "./redux";
 
 const App = () => {
   return (
@@ -13,7 +13,6 @@ const App = () => {
 };
 
 const 大儿子 = () => {
-  console.log("大儿子执行了!!!", Math.random());
   return (
     <section>
       大儿子
@@ -23,7 +22,6 @@ const 大儿子 = () => {
 };
 
 const 二儿子 = () => {
-  console.log("二儿子执行了!!!", Math.random());
   return (
     <section>
       二儿子
@@ -33,17 +31,18 @@ const 二儿子 = () => {
 };
 
 const 小儿子 = () => {
-  console.log("小儿子执行了!!!", Math.random());
   return <section>小儿子</section>;
 };
 
-const User = connect(({ state }) => {
-  console.log("User 执行了", Math.random());
-  return <div>User: {state.user.name}</div>;
+const User = connect((state) => {
+  return {
+    user: state.user,
+  };
+})(({ user }) => {
+  return <div>User: {user.name}</div>;
 });
 
-const UserModifier = connect(({ state, dispatch }) => {
-  console.log("UserModifier 执行了", Math.random());
+const UserModifier = connect()(({ state, dispatch }) => {
   const onChange = (e) => {
     dispatch({
       type: "updateUser",
