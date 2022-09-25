@@ -13,6 +13,7 @@ const App = () => {
 };
 
 const 大儿子 = () => {
+  console.log("大儿子！！！！");
   return (
     <section>
       大儿子
@@ -22,6 +23,7 @@ const 大儿子 = () => {
 };
 
 const 二儿子 = () => {
+  console.log("二儿子！！！！");
   return (
     <section>
       二儿子
@@ -30,11 +32,17 @@ const 二儿子 = () => {
   );
 };
 
-const 小儿子 = () => {
-  return <section>小儿子</section>;
-};
+const 小儿子 = connect((state) => {
+  return {
+    group: state.group,
+  };
+})(({ group }) => {
+  console.log("小儿子！！！！");
+  return <section>小儿子: {group.name}</section>;
+});
 
 const User = connect((state) => {
+  console.log("USER！！！");
   return {
     user: state.user,
   };
@@ -43,6 +51,7 @@ const User = connect((state) => {
 });
 
 const UserModifier = connect()(({ state, dispatch }) => {
+  console.log("UserModifier！！！！");
   const onChange = (e) => {
     dispatch({
       type: "updateUser",

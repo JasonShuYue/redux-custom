@@ -22,6 +22,9 @@ export const store = {
       name: "Jason",
       age: 18,
     },
+    group: {
+      name: "前端组",
+    },
   },
   listeners: [],
   subscribe: (fn) => {
@@ -40,13 +43,13 @@ export const store = {
 
 export const connect = (selector) => (Component) => {
   return (props) => {
-    const { state, setState, listeners } = useContext(AppContext);
+    const { state, setState } = useContext(AppContext);
     const [, update] = useState({});
 
     const data = selector ? selector(state) : { state };
 
     useEffect(() => {
-      listeners.push(() => update({}));
+      store.subscribe(() => update({}));
     }, []);
 
     const dispatch = (action) => {
