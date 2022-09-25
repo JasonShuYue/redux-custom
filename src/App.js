@@ -42,11 +42,12 @@ const 小儿子 = connect((state) => {
 });
 
 const User = connect((state) => {
-  console.log("USER！！！");
   return {
     user: state.user,
   };
 })(({ user }) => {
+  console.log("USER！！！---------");
+
   return <div>User: {user.name}</div>;
 });
 

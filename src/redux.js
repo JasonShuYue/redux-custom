@@ -41,6 +41,16 @@ export const store = {
   },
 };
 
+const changed = (oldData, newData) => {
+  let flag = false;
+  for (let key in oldData) {
+    if (oldData[key] !== newData[key]) {
+      flag = true;
+    }
+  }
+  return flag;
+};
+
 export const connect = (selector) => (Component) => {
   return (props) => {
     const { state, setState } = useContext(AppContext);
@@ -49,8 +59,16 @@ export const connect = (selector) => (Component) => {
     const data = selector ? selector(state) : { state };
 
     useEffect(() => {
-      store.subscribe(() => update({}));
-    }, []);
+      store.subscribe(() => {
+        const newData = selector
+          ? selector(store.state)
+          : { state: store.state };
+        if (changed(data, newData)) {
+          console.log("update");
+          update({});
+        }
+      });
+    }, [selector]);
 
     const dispatch = (action) => {
       setState(reducer(state, action));
