@@ -27,9 +27,12 @@ export const store = {
     },
   },
   listeners: [],
-  subscribe: (fn) => {
+  subscribe(fn) {
     store.listeners.push(fn);
+    console.log("???/", store.listeners);
+
     return () => {
+      console.log(232323);
       const index = store.listeners.indexOf(fn);
       store.listeners.splice(index, 1);
     };
@@ -58,17 +61,19 @@ export const connect = (selector) => (Component) => {
 
     const data = selector ? selector(state) : { state };
 
-    useEffect(() => {
-      store.subscribe(() => {
-        const newData = selector
-          ? selector(store.state)
-          : { state: store.state };
-        if (changed(data, newData)) {
-          console.log("update");
-          update({});
-        }
-      });
-    }, [selector]);
+    useEffect(
+      () =>
+        store.subscribe(() => {
+          const newData = selector
+            ? selector(store.state)
+            : { state: store.state };
+
+          if (changed(data, newData)) {
+            update({});
+          }
+        }),
+      []
+    );
 
     const dispatch = (action) => {
       setState(reducer(state, action));
